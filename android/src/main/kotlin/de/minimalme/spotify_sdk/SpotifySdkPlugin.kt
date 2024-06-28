@@ -399,9 +399,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
                 result.success(response.accessToken)
             }
             AuthorizationResponse.Type.CODE -> {
-                val codeMap = HashMap<String, String>()
-                codeMap["code"] = response.code
-                result.success(codeMap)
+                result.success(response.code)
             }
             AuthorizationResponse.Type.ERROR -> result.error(errorAuthenticationToken, "Authentication went wrong", response.error)
             else -> result.notImplemented()
