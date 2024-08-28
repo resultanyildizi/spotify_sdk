@@ -16,7 +16,7 @@ dependencies:
   logger: ^2.0.2
   dio: ^4.0.4
   json_annotation: ^4.4.0
-  js: ^0.6.3
+  js: ^0.7.1
   crypto: ^3.0.1
   synchronized: ^3.0.0
 
