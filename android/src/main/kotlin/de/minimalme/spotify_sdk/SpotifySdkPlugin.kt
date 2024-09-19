@@ -66,7 +66,10 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val methodGetAuthorizationCode = "getAuthorizationCode"
     private val methodDisconnectFromSpotify = "disconnectFromSpotify"
 
-    //player api
+    // connectApi
+    private val methodSwitchToLocalDevice = "switchToLocalDevice"
+
+    //playerApi
     private val methodGetCrossfadeState = "getCrossfadeState"
     private val methodGetPlayerState = "getPlayerState"
     private val methodPlay = "play"
@@ -85,13 +88,13 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private val methodSetRepeatMode = "setRepeatMode"
     private val methodIsSpotifyAppActive = "isSpotifyAppActive"
 
-    //user api
+    //userApi
     private val methodAddToLibrary = "addToLibrary"
     private val methodRemoveFromLibrary = "removeFromLibrary"
     private val methodGetCapabilities = "getCapabilities"
     private val methodGetLibraryState = "getLibraryState"
 
-    //images api
+    //imagesApi
     private val methodGetImage = "getImage"
 
     private val paramClientId = "clientId"
@@ -119,6 +122,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
     private var pendingOperation: PendingOperation? = null
     private var spotifyAppRemote: SpotifyAppRemote? = null
     private var spotifyPlayerApi: SpotifyPlayerApi? = null
+    private var spotifyConnectApi: SpotifyConnectApi? = null
     private var spotifyUserApi: SpotifyUserApi? = null
     private var spotifyImagesApi: SpotifyImagesApi? = null
 
@@ -169,6 +173,7 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             spotifyPlayerApi = SpotifyPlayerApi(spotifyAppRemote, result)
             spotifyUserApi = SpotifyUserApi(spotifyAppRemote, result)
             spotifyImagesApi = SpotifyImagesApi(spotifyAppRemote, result)
+            spotifyConnectApi = SpotifyConnectApi(spotifyAppRemote, result)
         }
 
         when (call.method) {
@@ -177,7 +182,9 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             methodGetAccessToken -> getAccessToken(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodGetAuthorizationCode -> getAuthorizationCode(call.argument(paramClientId), call.argument(paramRedirectUrl), call.argument(paramScope), result)
             methodDisconnectFromSpotify -> disconnectFromSpotify(result)
-            //player api calls
+            //connectApi calls
+            methodSwitchToLocalDevice -> spotifyConnectApi?.switchToLocalDevice()
+            //playerApi calls
             methodGetCrossfadeState -> spotifyPlayerApi?.getCrossfadeState()
             methodGetPlayerState -> spotifyPlayerApi?.getPlayerState()
             methodPlay -> spotifyPlayerApi?.play(call.argument(paramSpotifyUri))
@@ -195,12 +202,12 @@ class SpotifySdkPlugin : MethodCallHandler, FlutterPlugin, ActivityAware, Plugin
             methodToggleRepeat -> spotifyPlayerApi?.toggleRepeat()
             methodSetRepeatMode -> spotifyPlayerApi?.setRepeatMode(call.argument(paramRepeatMode))
             methodIsSpotifyAppActive -> spotifyPlayerApi?.isSpotifyAppActive()
-            //user api calls
+            //userApi calls
             methodAddToLibrary -> spotifyUserApi?.addToUserLibrary(call.argument(paramSpotifyUri))
             methodRemoveFromLibrary -> spotifyUserApi?.removeFromUserLibrary(call.argument(paramSpotifyUri))
             methodGetCapabilities -> spotifyUserApi?.getCapabilities()
             methodGetLibraryState -> spotifyUserApi?.getLibraryState(call.argument(paramSpotifyUri))
-            //image api calls
+            //imageApi calls
             methodGetImage -> spotifyImagesApi?.getImage(call.argument(paramImageUri), call.argument(paramImageDimension))
             // method call is not implemented yet
             else -> result.notImplemented()

@@ -13,18 +13,18 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
     
 
     public static func register(with registrar: FlutterPluginRegistrar) {
+        guard playerStateChannel == nil else {
+            // Avoid multiple plugin registations
+            return
+        }
         let spotifySDKChannel = FlutterMethodChannel(name: "spotify_sdk", binaryMessenger: registrar.messenger())
         let connectionStatusChannel = FlutterEventChannel(name: "connection_status_subscription", binaryMessenger: registrar.messenger())
         playerStateChannel = FlutterEventChannel(name: "player_state_subscription", binaryMessenger: registrar.messenger())
         playerContextChannel = FlutterEventChannel(name: "player_context_subscription", binaryMessenger: registrar.messenger())
-        
-
         let instance = SwiftSpotifySdkPlugin()
         registrar.addApplicationDelegate(instance)
         registrar.addMethodCallDelegate(instance, channel: spotifySDKChannel)
-
         instance.connectionStatusHandler = ConnectionStatusHandler()
-
         connectionStatusChannel.setStreamHandler(instance.connectionStatusHandler)
     }
 

@@ -95,7 +95,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     }
 
     internal fun seekTo(milliseconds: Int?) {
-        var castedMilliseconds = milliseconds?.toLong()
+        val castedMilliseconds = milliseconds?.toLong()
         if (playerApi != null && castedMilliseconds != null) {
             playerApi.seekTo(castedMilliseconds)
                     .setResultCallback { result.success(true) }
@@ -123,7 +123,7 @@ class SpotifyPlayerApi(spotifyAppRemote: SpotifyAppRemote?, result: MethodChanne
     internal fun setPodcastPlaybackSpeed(podcastPlaybackSpeedValue: Int?) {
         if (playerApi != null && podcastPlaybackSpeedValue != null) {
 
-            val podcastPlaybackSpeed = PlaybackSpeed.PodcastPlaybackSpeed.values()[podcastPlaybackSpeedValue]
+            val podcastPlaybackSpeed = PlaybackSpeed.PodcastPlaybackSpeed.values().firstOrNull{ it.value == podcastPlaybackSpeedValue }
 
             playerApi.setPodcastPlaybackSpeed(podcastPlaybackSpeed)
                     .setResultCallback { result.success(true) }
