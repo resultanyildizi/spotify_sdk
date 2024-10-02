@@ -81,18 +81,18 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                     return
             }
             
-          
+
             let additionalScopes = swiftArguments[SpotifySdkConstants.scope] as? String? ?? ""
             
             connectionStatusHandler?.codeResult = result
-        
+
             do {
                 guard let redirectURL = URL(string: url) else {
                     throw SpotifyError.redirectURLInvalid
                 }
                 
                 requestedAuthCode = true
-            
+                
                 let configuration = SPTConfiguration(clientID: clientID, redirectURL: redirectURL)
                 // This prevents SDK from auto verifying the authorization code
                 // and generating an access token. Instead, it redirects the
@@ -103,10 +103,9 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                 if let additionalScopes = additionalScopes {
                     scopes = additionalScopes.components(separatedBy: ",")
                 }
-               
-                let sptScope = scopeStringsToEnums(scopes: scopes)
                 
-                self.mmSessionManager?.initiateSession(with: sptScope, options: .clientOnly)
+                let sptScope = scopeStringsToEnums(scopes: scopes)
+                self.mmSessionManager?.initiateSession(with: sptScope, options: .clientOnly, campaign: nil)
                 
             }
             catch SpotifyError.redirectURLInvalid {
@@ -148,11 +147,11 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
             }
-
+            
             class ImageObject: NSObject, SPTAppRemoteImageRepresentable {
                 var imageIdentifier: String = ""
             }
-
+            
             let imageObject = ImageObject()
             imageObject.imageIdentifier = paramImageUri
             appRemote.imageAPI?.fetchImage(forItem: imageObject, with: CGSize(width: paramImageDimension, height: paramImageDimension), callback: { (image, error) in
@@ -239,7 +238,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                     return
             }
             let index = (swiftArguments[SpotifySdkConstants.paramTrackIndex] as? Int) ?? 0
-
+            
             appRemote.contentAPI?.fetchContentItem(forURI: uri, callback: { (contentItemResult, error) in
                 guard error == nil else {
                     result(FlutterError(code: "PlayerAPI Error", message: error?.localizedDescription, details: nil))
@@ -251,7 +250,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                 }
                 appRemote.playerAPI?.play(contentItem, skipToTrackIndex: index, callback: defaultPlayAPICallback)
             })
-
+            
         case SpotifySdkConstants.methodAddToLibrary:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
@@ -441,6 +440,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
               throw SpotifyError.spotifyNotInstalledError
             }
           }
+      }
     }
 }
 
@@ -501,6 +501,69 @@ extension SwiftSpotifySdkPlugin {
         }
             
         return mmSessionManager!.application(application, open: url, options: options)
+    }
+}
+
+extension SwiftSpotifySdkPlugin {
+    public func scopeStringsToEnums(scopes: [String]?) -> SPTScope {
+        var sptScope = SPTScope()
+        
+        if(scopes?.contains("user-top-read") == true) {
+            sptScope.insert(.userTopRead)
+        }
+        if(scopes?.contains("user-read-recently-played") == true) {
+            sptScope.insert(.userReadRecentlyPlayed)
+        }
+        if(scopes?.contains("user-read-playback-state") == true) {
+            sptScope.insert(.userReadPlaybackState)
+        }
+        if(scopes?.contains("user-modify-playback-state") == true) {
+            sptScope.insert(.userModifyPlaybackState)
+        }
+        if(scopes?.contains("user-read-currently-playing") == true) {
+            sptScope.insert(.userReadCurrentlyPlaying)
+        }
+        if(scopes?.contains("app-remote-control") == true) {
+            sptScope.insert(.appRemoteControl)
+        }
+        if(scopes?.contains("streaming") == true) {
+            sptScope.insert(.streaming)
+        }
+        if(scopes?.contains("playlist-read-private") == true) {
+            sptScope.insert(.playlistReadPrivate)
+        }
+        if(scopes?.contains("playlist-read-collaborative") == true) {
+            sptScope.insert(.playlistReadCollaborative)
+        }
+        if(scopes?.contains("playlist-modify-public") == true) {
+            sptScope.insert(.playlistModifyPublic)
+        }
+        if(scopes?.contains("playlist-modify-private") == true) {
+            sptScope.insert(.playlistModifyPrivate)
+        }
+        if(scopes?.contains("user-follow-modify") == true) {
+            sptScope.insert(.userFollowModify)
+        }
+        if(scopes?.contains("user-follow-read") == true) {
+            sptScope.insert(.userFollowRead)
+        }
+        if(scopes?.contains("user-library-read") == true) {
+            sptScope.insert(.userLibraryRead)
+        }
+        if(scopes?.contains("user-library-modify") == true) {
+            sptScope.insert(.userLibraryModify)
+        }
+        if(scopes?.contains("user-read-email") == true) {
+            sptScope.insert(.userReadEmail)
+        }
+        if(scopes?.contains("user-read-private") == true) {
+            sptScope.insert(.userReadPrivate)
+        }
+        if(scopes?.contains("ugc-image-upload") == true) {
+            sptScope.insert(.ugcImageUpload)
+        }
+        
+        return sptScope
     }
 }
 
