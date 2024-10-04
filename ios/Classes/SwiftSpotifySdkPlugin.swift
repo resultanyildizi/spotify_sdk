@@ -425,22 +425,24 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
             scopes = additionalScopes.components(separatedBy: ",")
         }
 
-        if(accessToken != nil) {
-            DispatchQueue.main.async {
-                // Everything inside this block will now work on the main thread
-                // This may solve the endless connecting issue.
+        // Note(resultanyildizi): Everything inside this block will now work on the main thread
+        DispatchQueue.main.async {
+            if(accessToken != nil) {
+                // Note(resultanyildizi): This may solve the endless connecting issue.
                 self.appRemote?.connect()
+            } else {
+                // Note: A blank string will play the user's last song or pick a random one.
+
+                // Note(resultanyildizi): If this is not called inside an async bloc
+                // Note(resultanyildizi): it is not successfully playing the media. It tries to reconnect
+                // Note(resultanyildizi): everytime a media is played.
+                self.appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) { success in
+                    if (!success) {
+                        self.connectionStatusHandler?.connectionResult?(FlutterError(code: "spotifyNotInstalled", message: "Spotify app is not installed", details: nil))
+                    }
+                }
             }
-            
-        } else {
-          let appRemote = self.appRemote
-          Task {
-            // Note: A blank string will play the user's last song or pick a random one.
-            if await appRemote?.authorizeAndPlayURI(spotifyUri, asRadio: asRadio ?? false, additionalScopes: scopes) == false {
-              throw SpotifyError.spotifyNotInstalledError
-            }
-          }
-      }
+        }
     }
 }
 
