@@ -99,9 +99,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                 // and generating an access token. Instead, it redirects the
                 // authorization code to the swap url.
                 configuration.tokenSwapURL = URL(string: tokenSwapUrl)
-                // The URL to use for attempting to renew an access token with a refresh token. 
-                // You should only set this if your clientID has a clientSecret and you have a 
-                // backend service that holds the secret and can use a refresh token to get a new access token.
+                // The URL to use for attempting to renew an access token with a refresh token.
                 configuration.tokenRefreshURL = URL(string: tokenRefreshUrl)
                 mmSessionManager = SPTSessionManager(configuration: configuration, delegate: self)
                 var scopes: [String]?
