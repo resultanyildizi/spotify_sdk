@@ -76,6 +76,7 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
             guard let swiftArguments = call.arguments as? [String:Any],
                 let clientID = swiftArguments[SpotifySdkConstants.paramClientId] as? String,
                 let tokenSwapUrl = swiftArguments[SpotifySdkConstants.paramTokenSwapURL] as? String,
+                let tokenRefreshUrl = swiftArguments[SpotifySdkConstants.paramTokenRefreshURL] as? String,
                 let url = swiftArguments[SpotifySdkConstants.paramRedirectUrl] as? String else {
                     result(FlutterError(code: "Arguments Error", message: "One or more arguments are missing", details: nil))
                     return
@@ -98,6 +99,8 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin, SPTSessionManagerDe
                 // and generating an access token. Instead, it redirects the
                 // authorization code to the swap url.
                 configuration.tokenSwapURL = URL(string: tokenSwapUrl)
+                // The URL to use for attempting to renew an access token with a refresh token.
+                configuration.tokenRefreshURL = URL(string: tokenRefreshUrl)
                 mmSessionManager = SPTSessionManager(configuration: configuration, delegate: self)
                 var scopes: [String]?
                 if let additionalScopes = additionalScopes {

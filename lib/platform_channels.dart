@@ -126,6 +126,9 @@ class ParamNames {
   /// param name for [tokenSwapUrl]
   static const String tokenSwapUrl = 'tokenSwapUrl';
 
+  /// param name for [tokenRefreshUrl]
+  static const String tokenRefreshUrl = 'tokenRefreshUrl';
+
   /// param name for [scope]
   static const String scope = 'scope';
 
