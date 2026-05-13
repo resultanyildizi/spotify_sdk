@@ -255,7 +255,15 @@ public class SwiftSpotifySdkPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "URI Error", message: "No URI was specified", details: nil))
                     return
             }
-            appRemote.playerAPI?.enqueueTrackUri(uri, callback: defaultPlayAPICallback)
+            appRemote.playerAPI?.enqueueTrackUri(uri, callback: { _, error in
+                if let error = error {
+                    print("[SpotifySDK] enqueueTrackUri error: \(error.localizedDescription)")
+                } else {
+                    print("[SpotifySDK] enqueueTrackUri success: \(uri)")
+                }
+            })
+            // enqueueTrackUri callback is never called by iOS Spotify App Remote SDK — call result immediately
+            result(true)
         case SpotifySdkConstants.methodSeekTo:
             guard let appRemote = appRemote else {
                 result(FlutterError(code: "Connection Error", message: "AppRemote is null", details: nil))
